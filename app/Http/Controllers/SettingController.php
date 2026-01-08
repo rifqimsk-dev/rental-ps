@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Food;
 use App\Models\Zone;
 use App\Models\Playstation;
 use Illuminate\Http\Request;
@@ -16,7 +17,8 @@ class SettingController extends Controller
         $title = 'Setting';
         $playstation = Playstation::select('id','type','hourly_rate')->get();
         $zone = Zone::select('id','name','status')->get();
-        return view('setting.index', compact('title','playstation','zone'));
+        $food = Food::select('id','name','stock','price')->get();
+        return view('setting.index', compact('title','playstation','zone','food'));
     }
 
     /**

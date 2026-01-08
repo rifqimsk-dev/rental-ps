@@ -20,3 +20,26 @@ tabs.forEach((tab, index) => {
         contents[index].classList.remove("hidden");
     });
 });
+
+const tabs2 = document.querySelectorAll(".tab-btn2");
+const contents2 = document.querySelectorAll(".tab-content2");
+
+tabs2.forEach((tab, index) => {
+    tab.addEventListener("click", () => {
+        // reset semua tab
+        tabs2.forEach((t) => {
+            t.classList.remove("bg-blue-500", "text-white");
+            t.classList.add("text-slate-500");
+        });
+
+        // sembunyikan semua konten
+        contents2.forEach((c) => c.classList.add("hidden"));
+
+        // aktifkan tab yg diklik
+        tab.classList.add("bg-blue-500", "text-white");
+        tab.classList.remove("text-slate-500");
+
+        // tampilkan konten
+        contents2[index].classList.remove("hidden");
+    });
+});

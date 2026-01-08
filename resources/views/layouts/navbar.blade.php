@@ -26,7 +26,7 @@
 
         <!-- HISTORY -->
         <li>
-            <a href="#" class="flex flex-col items-center gap-1 hover:text-blue-500 transition {{ request()->is('riwayat*') ? 'text-blue-600' : 'text-gray-500' }}">
+            <a href="{{ route('riwayat') }}" class="flex flex-col items-center gap-1 hover:text-blue-500 transition {{ request()->is('riwayat*') ? 'text-blue-600' : 'text-gray-500' }}">
                 <i class="fas fa-clock-rotate-left text-lg"></i>
                 <span class="text-[11px]">Riwayat</span>
             </a>

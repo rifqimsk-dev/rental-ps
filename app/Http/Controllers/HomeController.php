@@ -8,6 +8,7 @@ use App\Models\Playstation;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Helpers\InvoiceHelper;
+use App\Models\Food;
 
 class HomeController extends Controller
 {
@@ -19,6 +20,7 @@ class HomeController extends Controller
         $title = 'Home';
         $playstation = Playstation::select('id','type','hourly_rate')->get();
         $zone = Zone::select('id','name','status')->get();
+        $food = Food::select('id','name','stock','price')->get();
         $no_inv = InvoiceHelper::generate();
         $transactions = Transaction::select('id','customer_name','playstation_id','zone_id','total_hours','start_time','end_time_estimated','total_price','status')
                                   ->with(['playstation','zone'])
@@ -32,7 +34,7 @@ class HomeController extends Controller
                                     return $transaction;
                                   });
 
-        return view('home.index', compact('title','playstation','zone','no_inv','transactions'));
+        return view('home.index', compact('title','playstation','zone','no_inv','transactions','food'));
     }
 
     /**

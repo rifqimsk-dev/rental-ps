@@ -19,7 +19,27 @@
             <span class="text-sm font-medium">{{ session('alert') }}</span>
           </div>
         @endif
+        @if (session('failed'))
+          <div class="flex items-center gap-3 bg-amber-100 border border-amber-200 text-amber-700 px-4 py-3 rounded-xl mb-3">
+            <i class="fas fa-info-circle"></i>
+            <span class="text-sm font-medium">{{ session('failed') }}</span>
+          </div>
+        @endif
         <h2 class="font-semibold text-slate-600 mb-3">Order Aktif</h2>
+        
+        @if ($transactions->isEmpty())
+        <div class="bg-white border border-slate-200 rounded-xl p-8 text-center shadow-sm">
+          <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center">
+              <i class="fas fa-inbox text-blue-500 text-2xl"></i>
+            </div>
+          </div>
+          <h3 class="text-base font-semibold text-slate-700">Belum ada data</h3>
+          <p class="text-sm text-slate-500 mt-1">
+            Data belum tersedia atau belum ada yang tercatat saat ini.
+          </p>
+        </div>
+        @endif
 
         <div class="space-y-4">
           @foreach ($transactions as $transaction)

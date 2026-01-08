@@ -82,11 +82,13 @@
 
     <!-- LOGOUT -->
     <div class="pb-6">
-    <button
-        class="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-semibold shadow active:scale-95 transition"
-    >
-        <i class="fas fa-sign-out"></i> Logout
-    </button>
+        @if(Auth::check())
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button class="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-semibold shadow active:scale-95 transition">
+                    <i class="fas fa-sign-out"></i> Logout
+                </button>
+        @endif
     </div>
 </main>
 

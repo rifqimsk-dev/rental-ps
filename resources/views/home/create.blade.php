@@ -7,7 +7,7 @@
         </button>
     </div>
 
-    <div class="mx-auto bg-white shadow-sm border border-slate-200">
+    <div class="mx-auto bg-white shadow-sm border-t border-slate-200">
         <!-- TAB HEADER -->
         <div class="border-b border-slate-200">
             <nav class="flex">
@@ -70,38 +70,121 @@
 
             <!-- ORDER MAKANAN -->
             <div class="tab-content hidden">
-            <h2 class="text-base font-semibold text-slate-700 mb-4">
-                Order Makanan
-            </h2>
+                <h2 class="text-base text-slate-700 mb-4">
+                    Pilih Makanan
+                </h2>
 
-            <div class="space-y-3">
-                <div
-                class="flex justify-between items-center p-4 border border-slate-200 rounded-lg"
-                >
-                <span class="text-sm text-slate-600">🍕 Pizza</span>
-                <span class="text-sm font-medium text-slate-700">
-                    Rp 45.000
-                </span>
+                <div class="space-y-3" id="foodList">
+                    @foreach ($food as $row)
+                    <div class="flex items-center justify-between p-4 border border-slate-200 rounded-xl bg-white" data-id="{{ $row->id }}" data-name="{{ $row->name }}" data-price="{{ $row->price }}">
+                        <!-- INFO -->
+                        <div>
+                            <p class="text-sm font-medium text-slate-700">{{ $row->name }}</p>
+                            <p class="text-xs text-slate-500">Rp {{ number_format($row->price,0,",",".") }}</p>
+                        </div>
+                        <!-- QTY CONTROL -->
+                        <div class="flex items-center gap-3">
+                            <button class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 active:scale-95" onclick="changeQty(this, -1)">−</button>
+                            <span class="w-6 text-center text-sm font-semibold qty">0</span>
+                            <button class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-600 text-white active:scale-95" onclick="changeQty(this, 1)">+</button>
+                        </div>
+                    </div>
+                    @endforeach
                 </div>
 
-                <div
-                class="flex justify-between items-center p-4 border border-slate-200 rounded-lg"
-                >
-                <span class="text-sm text-slate-600">🍟 Kentang Goreng</span>
-                <span class="text-sm font-medium text-slate-700">
-                    Rp 20.000
-                </span>
-                </div>
+                <!-- FOOTER ORDER -->
+                <form action="{{ route('transaction.food') }}" method="post" id="orderForm" class="fixed bottom-20 left-0 right-0 bg-white p-4">
+                     @csrf
+                     <input type="hidden" name="items" id="orderItems">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm text-slate-500">Total</span>
+                        <span id="grandTotal" class="font-semibold text-slate-800">Rp 0</span>
+                    </div>
 
-                <div
-                class="flex justify-between items-center p-4 border border-slate-200 rounded-lg"
-                >
-                <span class="text-sm text-slate-600">🥤 Es Teh</span>
-                <span class="text-sm font-medium text-slate-700"> Rp 8.000 </span>
-                </div>
-            </div>
+                    <button onclick="submitOrder()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition">🧾 Order</button>
+                </form>
+
             </div>
         </div>
     </div>
 
 </div>
+
+<script>
+function changeQty(btn, delta) {
+  const card = btn.closest('[data-id]');
+  if (!card) return;
+
+  const qtyEl = card.querySelector('.qty');
+  if (!qtyEl) return;
+
+  let qty = parseInt(qtyEl.textContent) || 0;
+  qty = Math.max(0, qty + delta);
+  qtyEl.textContent = qty;
+
+  // 🔥 TOGGLE BORDER KETIKA QTY >= 1
+  if (qty >= 1) {
+    card.classList.add(
+      'border-blue-500',
+      'ring-2',
+      'ring-blue-200'
+    );
+    card.classList.remove('border-slate-200');
+  } else {
+    card.classList.remove(
+      'border-blue-500',
+      'ring-2',
+      'ring-blue-200'
+    );
+    card.classList.add('border-slate-200');
+  }
+
+  updateTotal();
+}
+
+
+function updateTotal() {
+  let total = 0;
+
+  document.querySelectorAll('[data-id]').forEach(item => {
+    const qtyEl = item.querySelector('.qty');
+    if (!qtyEl) return; // ⛔ skip jika tidak ada qty
+
+    const price = parseInt(item.dataset.price);
+    const qty = parseInt(qtyEl.textContent) || 0;
+
+    total += price * qty;
+  });
+
+  document.getElementById('grandTotal').textContent =
+    'Rp ' + total.toLocaleString('id-ID');
+}
+
+function submitOrder() {
+  let items = [];
+
+  document.querySelectorAll('#foodList [data-id]').forEach(item => {
+    const qtyEl = item.querySelector('.qty');
+    if (!qtyEl) return;
+
+    const qty = parseInt(qtyEl.textContent) || 0;
+    if (qty > 0) {
+      items.push({
+        id: item.dataset.id,
+        name: item.dataset.name,
+        price: parseInt(item.dataset.price),
+        qty: qty
+      });
+    }
+  });
+
+  if (!items.length) {
+    alert('Pilih minimal 1 item');
+    return;
+  }
+
+  document.getElementById('orderItems').value = JSON.stringify(items);
+  document.getElementById('orderForm').submit();
+}
+
+</script>

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Food;
+use App\Models\FoodTransaction;
 use App\Models\Zone;
 use App\Models\Playstation;
 use App\Models\Transaction;
@@ -17,12 +19,14 @@ class OrderController extends Controller
         $title = 'Data Orderan';
         $playstation = Playstation::select('id','type','hourly_rate')->get();
         $zone = Zone::select('id','name','status')->get();
-        $transaction = Transaction::select('id','customer_name','playstation_id','hourly_rate','total_hours','total_price','status')
+        $food = Food::select('id','name','stock','price')->get();
+        $transaction = Transaction::select('id','customer_name','playstation_id','hourly_rate','total_hours','total_price','status','created_at')
                                   ->with('playstation')
                                   ->whereIn('status',['running','finished'])
                                   ->orderBy('id', 'desc')
                                   ->get();
-        return view('order.index', compact('title','transaction','playstation','zone'));
+        $food_transaction = FoodTransaction::with('details')->orderBy('created_at', 'desc')->get();
+        return view('order.index', compact('title','transaction','playstation','zone','food','food_transaction'));
     }
 
     /**

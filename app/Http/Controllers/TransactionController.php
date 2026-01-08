@@ -7,6 +7,9 @@ use App\Models\Playstation;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Helpers\InvoiceHelper;
+use App\Models\FoodTransaction;
+use Illuminate\Support\Facades\DB;
+use App\Models\FoodTransactionDetail;
 
 class TransactionController extends Controller
 {
@@ -117,5 +120,44 @@ class TransactionController extends Controller
             'alert',
             'Berhasil dibatalkan'
         );
+    }
+
+    public function food(Request $request)
+    {
+        $items = json_decode($request->items, true);
+
+        if (!$items || !is_array($items)) {
+            return back()->with('failed', 'Data order tidak valid');
+        }
+
+        DB::transaction(function () use ($items) {
+
+            // 1️⃣ HITUNG TOTAL
+            $total = 0;
+            foreach ($items as $item) {
+                $total += $item['price'] * $item['qty'];
+            }
+
+            // 2️⃣ INSERT KE TRANSAKSI (PARENT)
+            $transaction = FoodTransaction::create([
+                'user_id' => 1,
+                'total_price'   => $total,
+            ]);
+
+            // 3️⃣ INSERT KE DETAIL (CHILD)
+            foreach ($items as $item) {
+                FoodTransactionDetail::create([
+                    'food_transaction_id' => $transaction->id,
+                    'food_name' => $item['name'],
+                    'price'     => $item['price'],
+                    'qty'       => $item['qty'],
+                ]);
+            }
+
+        });
+
+        return redirect()
+            ->back()
+            ->with('alert', 'Order berhasil disimpan');
     }
 }
