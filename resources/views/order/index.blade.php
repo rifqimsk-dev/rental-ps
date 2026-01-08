@@ -56,6 +56,7 @@
             </p>
           </div>
         @endif
+        @if ($transaction->isNotEmpty())
         <div class="overflow-x-auto bg-white border border-slate-200 rounded-xl shadow-sm">
             <table class="min-w-full text-xs text-slate-600 whitespace-nowrap">
                 <!-- TABLE HEAD -->
@@ -95,6 +96,7 @@
                 </tbody>
             </table>
         </div>
+        @endif
 
       </div>
 
